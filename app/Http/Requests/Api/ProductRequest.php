@@ -6,39 +6,41 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ProductRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
+    
     public function authorize()
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
         $rules = [
             "category_id" => "required",
             "price" => "required|numeric",
+            // "en.name" => "required|numeric",
+            // "ar.name" => "required|numeric",
+            // "en.description" => "required|numeric",
+            // "ar.description" => "required|numeric",
             "image" => "image|mimes:jpeg,png,jpg,gif,svg|min:1"
         ];
 
-        foreach (config()->get("app.locales") as $key => $lang) {
-            $rules[$key.".name"] = "required" ;
-            $rules[$key.".description"] = "required" ;
-        }
-
+        
         if ($this->isMethod('post')) {
             $rules["image"] = "required" ;
         }
+        // dd($rules);
 
         return $rules ;
     }
 
 }
+
+
+// {
+//     "price":"300" ,
+//     "category_id":"1"     ,
+//     "en[name]":"haaa"     ,
+//     "ar[name]":"aaaaa"     ,
+//     "en[description]":"aaaaa",     
+//     "ar[description]":"1ssssssss"     
+//   }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Order;
+use App\Models\Coupon;
 use Illuminate\Routing\Controller;
 use App\Http\Services\OrderService;
 use App\Http\Requests\Api\OrderRequest;
@@ -32,12 +33,16 @@ class OrdersController extends Controller
 
     public function store(OrderRequest $request, OrderService $orderService)
     {
+        if($request->filled('coupon')) {
+            $coupon= Coupon::where('value', $request->get('coupon'))->whereActive(1)->first();
+            if(!$coupon) {
+                return response()->json("coupon code is despired or doesnot exist");
+            }
+            
+        }
         $order = $orderService->fillApiRequest($request);
-
         return response()->json("added");
     }
-
-
     public function orderCancel(Order $order)
     {
         $order->status = OrderStatus::CANCELLED ;

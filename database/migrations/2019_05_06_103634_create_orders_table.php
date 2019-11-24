@@ -19,6 +19,7 @@ class CreateOrdersTable extends Migration
             $table->text('address');
             $table->float('lat');
             $table->float('long');
+            $table->integer('coupon')->nullable();
             $table->integer('status')->nullable();
             $table->double('total_price')->nullable();
             $table->timestamps();

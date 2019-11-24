@@ -29,19 +29,13 @@ Route::namespace("Api")->group(function () {
 
     /////////////////// categories /////////////
 
-    Route::get('categories','CategoriesController@index');
-    Route::get('categories/{category}','CategoriesController@show');
-    Route::get('category/{category}/Products','CategoriesController@products');
-    Route::post('category/store','CategoriesController@store');
-    Route::PUT('category/{category}/update','CategoriesController@update');
-    Route::delete('category/{category}/destroy','CategoriesController@destroy');
+    Route::get('categories/{category}/Products','CategoriesController@products');
+
+    Route::resource('categories','CategoriesController');
 
     ///////////////// products /////////////////
-    Route::get('/products','ProductsController@index');
-    Route::get('/products/{product}','ProductsController@show');
-    Route::POST('products/store','ProductsController@store');
-    Route::DELETE('/products/{product}/destroy','ProductsController@destroy');
-    Route::PUT('/products/{product}/update','ProductsController@update');
+   
+    Route::resource('products','ProductsController');
 
     /////////////////// orders /////////////////
     
@@ -51,17 +45,6 @@ Route::namespace("Api")->group(function () {
     Route::post('orders/store','OrdersController@store');
     Route::post('orders/{order}/cancel','OrdersController@orderCancel');
 
+    Route::resource("coupons", "CouponsController");
 });    
 
-
-
-
-
-// {
-//     "en[name]":"btngan",
-//     "ar[name]":"بتنجان" ,
-//     "en[description]":"mahshy" ,
-//     "ar[description]":"محشى لزيز",
-//     "price":"300" ,
-//     "category_id":"1"     
-//   }
