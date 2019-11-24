@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Constants\OrderStatus;
 use App\Models\Order;
+use App\Models\Coupon;
 use App\Models\Product;
 use App\Models\OrderProduct;
 use App\Repositories\OrderRepository;
@@ -60,47 +61,28 @@ class OrderService
         $order->save();
 
         $products = $request->request->get('products');
-        $savedProduct= [] ;
         foreach ($products as $product) {
-            $savedProduct['order_id'] = $order->id;
-            $savedProduct['product_id'] = $product[0];
-            $savedProduct['category_id'] = $product[1];
-            $savedProduct['price'] = $product[2];
-            $savedProduct['quantity'] = $product[3];
-            $savedProduct['total'] = (($product[2]) * ($product[3]) );
-            // dd($savedProduct['total']);
             $orderProduct = OrderProduct::create(
                 [
-                'order_id' => $savedProduct['order_id'],
-                'product_id' =>$savedProduct['product_id'],
-                'category_id' =>$savedProduct['category_id'],
-                'price' =>$savedProduct['price'],
-                'quantity' =>$savedProduct['quantity'],
-                'total' =>$savedProduct['total']
+                'order_id' => $order->id,
+                'product_id' =>$product[0],
+                'category_id' =>  $product[1],
+                'price' =>$product[2],
+                'quantity' => $product[3],
+                'total' =>(($product[2]) * ($product[3]) )
                 ]
             );
             $this->setOrderTotalCost($orderProduct);
 
         }
-        // return $order;
-    }
-
-    public function orderConfirm($order)
-    {
-        $order->status = OrderStatus::PENDING_PACKING;
-
-        $order->save();
-
-        return $order;
-    }
-
-    public function orderDeliver($order)
-    {
-        $order->status = OrderStatus::DELIVERED;
-
-        $order->save();
-
-        return $order;
+        if($request->filled('coupon')) {
+            $coupon= Coupon::where('value', $request->get('coupon'))->whereActive(1)->first();
+            if($coupon) {
+                $order = Order::find($order->id);
+                $order->total_price =$order->total_price *($coupon->value/100); 
+                $order->save();
+            }
+        }
     }
 
     public function setOrderTotalCost($orderProduct)
@@ -109,5 +91,25 @@ class OrderService
         $order->total_price += $orderProduct->total;
         $order->save();
     }
+
+    // public function orderConfirm($order)
+    // {
+    //     $order->status = OrderStatus::PENDING_PACKING;
+
+    //     $order->save();
+
+    //     return $order;
+    // }
+
+    // public function orderDeliver($order)
+    // {
+    //     $order->status = OrderStatus::DELIVERED;
+
+    //     $order->save();
+
+    //     return $order;
+    // }
+
+   
 
 }
